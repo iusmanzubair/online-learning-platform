@@ -4,6 +4,11 @@ import './index.css'
 import App from './App.tsx'
 import { BrowserRouter, Route, Routes } from 'react-router'
 import { Courses } from './components/Courses.tsx'
+import { StudentLogin } from './components/StudentLogin.tsx'
+import { InstructorLogin } from './components/InstructorLogin.tsx'
+import { AddCourse } from './components/AddCourse.tsx'
+import { AssignTask } from './components/AssignTast.tsx'
+import { Assignments } from './components/Assignments.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -11,7 +16,12 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path='/' element={<App/>}/>
         <Route path='/courses' element={<Courses/>}/>
+        <Route path='/student-login' element={<StudentLogin/>}/>
+        <Route path='/instructor-login' element={<InstructorLogin/>}/>
+        <Route path='/add-course' element={<AddCourse/>}/>
+        <Route path='/assignments' element={<Assignments/>}/>
+        <Route path='/assign-task/:courseId' element={<AssignTask/>}/>
       </Routes>
     </BrowserRouter>
-  </StrictMode>,
+  </StrictMode>
 )

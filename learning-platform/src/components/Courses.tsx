@@ -1,38 +1,76 @@
-import axios from "axios"
-import { MaxWidthWrapper } from "./MaxWidthWrapper"
-import { useEffect, useState } from "react"
+import axios from "axios";
+import { MaxWidthWrapper } from "./MaxWidthWrapper";
+import { useEffect, useState } from "react";
+import { decodeToken } from "./decodeToken";
+import { Enroll } from "./Enroll";
 
 interface courseType {
-    id: number,
-    name: string
+  id: number;
+  title: string;
+  description: string;
+  instructor: string;
+  category: string;
 }
 
-export const Courses = ()=> {
-    const [courses, setCourses] = useState<courseType[]>([]);
-    
-    useEffect(()=> {
-        const getCourses = async ()=> {
-            try {
-                const {data} = await axios.get("http://localhost:3000/courses");
-                setCourses(data.courses);
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        getCourses();
-    }, [])
+export const Courses = () => {
+  const [courses, setCourses] = useState<courseType[]>([]);
+  const token = localStorage.getItem("token");
 
-    return <MaxWidthWrapper>
-        <h1 className="text-2xl font-medium">Courses we offer</h1>
-        {courses.length > 0 ? (
-            courses.map((course)=> (
-                <div key={course.id} className="border border-black">
-                    <p>{course.name}</p>
+  useEffect(() => {
+    const getCourses = async () => {
+      try {
+        const { data } = await axios.get("http://localhost:3000/courses");
+        setCourses(data.courses);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getCourses();
+  }, []);
+
+  return (
+    <MaxWidthWrapper>
+      <div className="flex items-center justify-between mt-16">
+        <h1 className="text-3xl font-medium">Courses we offer</h1>
+        {
+          //@ts-ignore
+          token && decodeToken(token).role === "INSTRUCTOR" ? (
+            <a
+              href="/add-course"
+              className="py-2 px-4 border-black border-2 rounded-lg"
+            >
+              Add Course
+            </a>
+          ) : null
+        }
+      </div>
+      {courses.length > 0 ? (
+        <div className="h-[500px] my-10">
+          {courses.map((course) => (
+            <div key={course.id} className="border-[1.5px] rounded-lg border-neutral-300 flex flex-col w-[350px] h-[300px]">
+                <div className="bg-[#f4f4f5] w-full h-[150px]"/>
+                <div className="p-4">
+              <h2 className="text-xl font-medium">{course.title}</h2>
+              <p className="text-neutral-600 text-[15px]">{course.description}</p>
+              <div className="text-sm flex items-end justify-between h-[80px] text-neutral-600">
+                <div className="flex flex-col">
+                <span>Instructor: {course.instructor}</span>
+                <span>Category: {course.category}</span>
                 </div>
-            ))
-        ) : (
-            <p>No courses available!</p>
-        )
-        }
+                { 
+                  //@ts-ignore
+                  token && decodeToken(token).role === "INSTRUCTOR" ? <a href={`/assign-task/${course.id}`} className="py-2 px-4 bg-black text-white rounded-lg">Assign Task</a> : <Enroll token={token as string} courseId={course.id}/>
+                }
+              </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="h-[500px] flex items-center justify-center">
+          <p className="text-center text-lg">No courses available!</p>
+        </div>
+      )}
     </MaxWidthWrapper>
-}
+  );
+};

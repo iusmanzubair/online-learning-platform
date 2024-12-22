@@ -75,7 +75,7 @@ const createTables = async ()=> {
         connection.query(createEnrollmentsTable);
 
         const createAssignmentTable = `
-            CREATE TABLE Assignments (
+            CREATE TABLE IF NOT EXISTS Assignments (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 courseId INT NOT NULL,
                 title VARCHAR(200) NOT NULL,
