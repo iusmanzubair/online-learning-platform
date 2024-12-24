@@ -9,6 +9,7 @@ import { InstructorLogin } from './components/InstructorLogin.tsx'
 import { AddCourse } from './components/AddCourse.tsx'
 import { AssignTask } from './components/AssignTast.tsx'
 import { Assignments } from './components/Assignments.tsx'
+import { Settings } from './components/Settings.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -19,8 +20,9 @@ createRoot(document.getElementById('root')!).render(
         <Route path='/student-login' element={<StudentLogin/>}/>
         <Route path='/instructor-login' element={<InstructorLogin/>}/>
         <Route path='/add-course' element={<AddCourse/>}/>
-        <Route path='/assignments' element={<Assignments/>}/>
+        <Route path='/assignments/:courseId' element={<Assignments/>}/>
         <Route path='/assign-task/:courseId' element={<AssignTask/>}/>
+        <Route path='/settings/:id' element={<Settings/>}/>
       </Routes>
     </BrowserRouter>
   </StrictMode>

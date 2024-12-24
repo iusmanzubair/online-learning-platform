@@ -1,7 +1,9 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { BookOpen } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { tokenType } from "./decodeToken";
 
 
 export const Enroll = ({token, courseId}: {token: string, courseId: number})=> {
@@ -9,7 +11,7 @@ export const Enroll = ({token, courseId}: {token: string, courseId: number})=> {
         return null;
     
     const [isEnrolled, setIsEnrolled] = useState(false);
-    const decodedToken = jwtDecode<{id: number, role: "INSTRUCTOR" | "STUDENT"}>(token);
+    const decodedToken = jwtDecode<tokenType>(token);
 
     const navigate = useNavigate();
     useEffect(()=> {
@@ -43,6 +45,12 @@ export const Enroll = ({token, courseId}: {token: string, courseId: number})=> {
         }
     }
     return <div>
-        {!isEnrolled ? <button onClick={handleEnroll} className="py-2 px-4 bg-black text-white rounded-lg">Enroll now</button> : <button className="py-2 px-4 bg-red-600 text-white rounded-lg" onClick={deleteEnroll}>Cancel</button>}
+        {!isEnrolled ?
+            <button onClick={handleEnroll} className="py-2 px-4 bg-black text-white rounded-lg">Enroll now</button>
+        : <div className="flex gap-1">
+            <a href={`/assignments/${courseId}`} className="block py-2 px-4 bg-black text-white rounded-lg"><BookOpen className="w-5 h-5"/></a> 
+            <button className="py-2 px-4 bg-red-500 text-white rounded-lg" onClick={deleteEnroll}>Cancel</button>
+        </div>
+        }
     </div>
 }

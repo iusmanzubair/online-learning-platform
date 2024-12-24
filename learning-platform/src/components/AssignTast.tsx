@@ -2,13 +2,14 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { tokenType } from "./decodeToken";
 
 export const AssignTask = () => {
     const token = localStorage.getItem('token');
     if(!token)
         return null;
 
-    const decodedToken = jwtDecode<{id: "number", role: "INSTRUCTOR" | "STUDENT"}>(token);
+    const decodedToken = jwtDecode<tokenType>(token);
     if(decodedToken.role !== "INSTRUCTOR")
         return null;
 
@@ -23,7 +24,7 @@ export const AssignTask = () => {
     e.preventDefault();
     try {
       await axios.post("http://localhost:3000/assign-task", {title, description, dueDate, courseId});
-      navigate("/assignments");
+      navigate(`/assignments/${courseId}`);
     } catch (error) {
       console.log(error);
     }
@@ -72,7 +73,7 @@ export const AssignTask = () => {
             type="text"
             id="dueDate"
             className="border-[1.5px] mb-4 mt-2 py-1 px-3 rounded-md shadow-sm focus:outline"
-            placeholder="MM/DD/YYYY"
+            placeholder="YYYY/MM/DD"
             value={dueDate}
             onChange={(e)=> setDueDate(e.target.value)}
           />

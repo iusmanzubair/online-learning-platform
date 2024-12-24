@@ -3,6 +3,7 @@ import { MaxWidthWrapper } from "./MaxWidthWrapper";
 import { useEffect, useState } from "react";
 import { decodeToken } from "./decodeToken";
 import { Enroll } from "./Enroll";
+import { BookOpen } from "lucide-react";
 
 interface courseType {
   id: number;
@@ -33,7 +34,6 @@ export const Courses = () => {
       <div className="flex items-center justify-between mt-16">
         <h1 className="text-3xl font-medium">Courses we offer</h1>
         {
-          //@ts-ignore
           token && decodeToken(token).role === "INSTRUCTOR" ? (
             <a
               href="/add-course"
@@ -47,7 +47,7 @@ export const Courses = () => {
       {courses.length > 0 ? (
         <div className="h-[500px] my-10">
           {courses.map((course) => (
-            <div key={course.id} className="border-[1.5px] rounded-lg border-neutral-300 flex flex-col w-[350px] h-[300px]">
+            <div key={course.id} className="border-[1.5px] rounded-lg border-neutral-300 flex flex-col w-[370px] h-[300px] shadow-sm">
                 <div className="bg-[#f4f4f5] w-full h-[150px]"/>
                 <div className="p-4">
               <h2 className="text-xl font-medium">{course.title}</h2>
@@ -57,10 +57,14 @@ export const Courses = () => {
                 <span>Instructor: {course.instructor}</span>
                 <span>Category: {course.category}</span>
                 </div>
-                { 
-                  //@ts-ignore
-                  token && decodeToken(token).role === "INSTRUCTOR" ? <a href={`/assign-task/${course.id}`} className="py-2 px-4 bg-black text-white rounded-lg">Assign Task</a> : <Enroll token={token as string} courseId={course.id}/>
+                <div className="flex gap-1">
+                {
+                  token && decodeToken(token).role === "INSTRUCTOR" ? <a href={`/assignments/${course.id}`} className="block py-2 px-4 bg-black text-white rounded-lg"><BookOpen className="w-5 h-5"/></a> : null
                 }
+                { 
+                  token && decodeToken(token).role === "INSTRUCTOR" ? <a href={`/assign-task/${course.id}`} className="block py-2 px-4 bg-black text-white rounded-lg">Assign Task</a> : <Enroll token={token as string} courseId={course.id}/>
+                }
+                </div>
               </div>
               </div>
             </div>

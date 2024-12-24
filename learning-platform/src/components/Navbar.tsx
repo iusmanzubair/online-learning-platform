@@ -1,5 +1,6 @@
 import { LogIn } from "lucide-react";
 import { useNavigate } from "react-router";
+import { decodeToken } from "./decodeToken";
 
 export const Navbar = () => {
   const token = localStorage.getItem("token");
@@ -17,7 +18,10 @@ export const Navbar = () => {
         <a href="/courses">Courses</a>
       </ul>
       {token ? (
+        <div className="flex gap-2">
+        <a className="block py-2 px-4 bg-black text-white rounded-lg" href={`/settings/${decodeToken(token).id}`}>Settings</a>
         <button className="py-2 px-4 bg-black text-white rounded-lg" onClick={handleLogout}>Logout</button>
+        </div>
       ) : (
         <div className="flex items-center justify-between gap-2">
           <a

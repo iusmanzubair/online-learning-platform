@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { jwtDecode } from "jwt-decode";
+import { tokenType } from "./decodeToken";
 
 
 export const AddCourse = () => {
@@ -13,15 +14,13 @@ export const AddCourse = () => {
         return;
     }
 
-    const decodedToken = jwtDecode(token);
+    const decodedToken = jwtDecode<tokenType>(token);
 
-    //@ts-ignore
     if(decodedToken.role !== "INSTRUCTOR") {
         navigate('/');
         return;
     }
 
-    //@ts-ignore
     const email = decodedToken.email;
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
