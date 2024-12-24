@@ -1,8 +1,9 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { jwtDecode } from "jwt-decode";
 import { tokenType } from "./decodeToken";
+import toast, { Toaster } from "react-hot-toast";
 
 
 export const AddCourse = () => {
@@ -30,10 +31,17 @@ export const AddCourse = () => {
     const handleSubmit = async (e: any) => {
         e.preventDefault();
         try {
-        await axios.post("http://localhost:3000/add-course", {title, description, category, instructorEmail: email});
-        navigate("/courses");
+          await axios.post("http://localhost:3000/add-course", {title, description, category, instructorEmail: email});
+          navigate("/courses");
         } catch (error) {
-        console.log(error);
+          if(error instanceof AxiosError) {
+            if(error.response) {
+              const { message } = error.response.data; 
+              return toast.error(message ?? "Something went wrong");
+            }
+
+        }
+          return toast.error("Something went wrong");
         }
     };
 
@@ -92,6 +100,7 @@ export const AddCourse = () => {
           </button>
         </form>
       </div>
+      <Toaster />
     </div>
   );
 };

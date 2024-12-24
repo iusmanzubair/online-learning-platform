@@ -1,9 +1,9 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router";
 
 export const StudentLogin = () => {
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -12,11 +12,18 @@ export const StudentLogin = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
-      const {data} = await axios.post("http://localhost:3000/create-student", {name, email, password});
+      const { data } = await axios.post("http://localhost:3000/student-login", { email, password });
       localStorage.setItem("token", data.token)
       navigate("/courses");
     } catch (error) {
-      console.log(error);
+      if(error instanceof AxiosError) {
+            if(error.response) {
+                const { message } = error.response.data; 
+                return toast.error(message ?? "Something went wrong");
+            }
+
+        }
+        return toast.error("Something went wrong");
     }
   };
 
@@ -27,18 +34,7 @@ export const StudentLogin = () => {
         <p className="text-center text-slate-500 my-1">
           Login with your email and password
         </p>
-        <form className="flex flex-col w-[360px] mt-10" onSubmit={handleSubmit}>
-          <label htmlFor="name" className="text-sm font-medium tracking-wide">
-            Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            className="border-[1.5px] mb-4 mt-2 py-1 px-3 rounded-md shadow-sm focus:outline"
-            placeholder="John"
-            value={name}
-            onChange={(e)=> setName(e.target.value)}
-          />
+        <form className="flex flex-col w-[360px] mt-6" onSubmit={handleSubmit}>
           <label
             htmlFor="email"
             className="text-sm font-medium tracking-wide mt-2"
@@ -73,8 +69,10 @@ export const StudentLogin = () => {
           >
             Login
           </button>
+          <p className="text-sm text-center">Don't have an account?{" "}<a href="/create-student" className="underline text-blue-600">Register</a></p>
         </form>
       </div>
+      <Toaster />
     </div>
   );
 };

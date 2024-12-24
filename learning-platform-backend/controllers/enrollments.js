@@ -2,33 +2,45 @@ import db from "../database/db.js";
 
 export const addEnrollment = async (req, res)=> {
  try {
-    const {studentId, courseId} = req.body;
+    const { studentId, courseId } = req.body;
+
+    if(!studentId || !courseId) {
+        return res.status(400).json({
+            success: false,
+            message: "Unable to enroll"
+        })
+    }
     await db.query(`INSERT INTO Enrollments (studentId, courseId) VALUES (?, ?)`, [studentId, courseId]);
     
     res.status(200).json({
         success: true,
-        message: "Successfully Enrolled!"
+        message: "Successfully Enrolled"
     })
  } catch (error) {
     res.status(400).json({
-            success: false,
-            message: "Unable to enroll!"
+        success: false,
+        message: "Unable to enroll"
     })
  }
 }
 
 export const checkEnrollment = async (req, res)=> {
     try {
-        const {studentId, courseId} = req.query;
+        const { studentId, courseId } = req.query;
+       
+        if(!studentId || !courseId) {
+            return res.status(400).json({
+                success: false,
+                message: "Unable to check for enrollment"
+            })
+        } 
 
         const [enrollment] = await db.query(`SELECT * FROM Enrollments WHERE courseId=? AND studentId=?`, [courseId, studentId]);
 
         if(!enrollment || enrollment.length == 0) {
-            res.status(200).json({
+            return res.status(200).json({
                 isEnrolled: false
             })
-
-            return;
         }
 
         res.status(200).json({
@@ -37,22 +49,28 @@ export const checkEnrollment = async (req, res)=> {
     } catch (error) {
         res.status(400).json({
             success: false,
-            message: "Unable to check for enrollment!"
+            message: "Unable to check for enrollment"
         })
     }
 }
 
 export const deleteEnrollment = async (req, res)=> {
     try {
-        const {studentId, courseId} = req.query;
+        const { studentId, courseId } = req.query;
+        
+        if(!studentId || !courseId) {
+            return res.status(400).json({
+                success: false,
+                message: "Unable to delete enrollment"
+            })
+        } 
+
         const [enrollment] = await db.query(`SELECT * FROM Enrollments WHERE courseId=? AND studentId=?`, [courseId, studentId]);
 
         if(!enrollment || enrollment.length === 0) {
-            res.status(401).json({
+            return res.status(401).json({
                 message: "User is not enrolled in particular course"
             })
-
-            return;
         }
 
         await db.query(`DELETE FROM Enrollments WHERE courseId=? AND studentId=?`, [courseId, studentId]);
@@ -63,7 +81,7 @@ export const deleteEnrollment = async (req, res)=> {
     } catch (error) {
         res.status(400).json({
             success: false,
-            message: "Unable to delete enrollment!"
+            message: "Unable to delete enrollment"
         })
     }
 }

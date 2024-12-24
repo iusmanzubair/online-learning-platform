@@ -1,9 +1,10 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { jwtDecode } from "jwt-decode";
 import { BookOpen } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { tokenType } from "./decodeToken";
+import toast, { Toaster } from "react-hot-toast";
 
 
 export const Enroll = ({token, courseId}: {token: string, courseId: number})=> {
@@ -12,6 +13,7 @@ export const Enroll = ({token, courseId}: {token: string, courseId: number})=> {
     
     const [isEnrolled, setIsEnrolled] = useState(false);
     const decodedToken = jwtDecode<tokenType>(token);
+    const {pathname} = useLocation();
 
     const navigate = useNavigate();
     useEffect(()=> {
@@ -20,7 +22,14 @@ export const Enroll = ({token, courseId}: {token: string, courseId: number})=> {
                 const {data} = await axios.get(`http://localhost:3000/enroll?studentId=${decodedToken.id}&courseId=${courseId}`)
                 setIsEnrolled(data.isEnrolled);
             } catch (error) {
-                console.log(error);
+                if(error instanceof AxiosError) {
+                        if(error.response) {
+                        const { message } = error.response.data; 
+                        return toast.error(message ?? "Something went wrong");
+                    }
+
+                }
+                return toast.error("Something went wrong");
             }
         }
         
@@ -30,18 +39,32 @@ export const Enroll = ({token, courseId}: {token: string, courseId: number})=> {
     const handleEnroll = async ()=> {
        try {
          await axios.post("http://localhost:3000/enroll", {studentId: decodedToken.id, courseId});
-         navigate(0);
+         pathname === '/courses' ? navigate(0) : navigate('/courses');
        } catch (error) {
-         console.log(error);
+         if(error instanceof AxiosError) {
+            if(error.response) {
+              const { message } = error.response.data; 
+              return toast.error(message ?? "Something went wrong");
+            }
+
+        }
+          return toast.error("Something went wrong");
        }
     }
 
     const deleteEnroll = async ()=> {
         try {
             await axios.delete(`http://localhost:3000/enroll?studentId=${decodedToken.id}&courseId=${courseId}`);
-            navigate(0);
+            pathname === '/courses' ? navigate(0) : navigate('/courses');
         } catch (error) {
-            console.log(error);
+            if(error instanceof AxiosError) {
+            if(error.response) {
+              const { message } = error.response.data; 
+              return toast.error(message ?? "Something went wrong");
+            }
+
+        }
+          return toast.error("Something went wrong");
         }
     }
     return <div>
@@ -52,5 +75,6 @@ export const Enroll = ({token, courseId}: {token: string, courseId: number})=> {
             <button className="py-2 px-4 bg-red-500 text-white rounded-lg" onClick={deleteEnroll}>Cancel</button>
         </div>
         }
+        <Toaster />
     </div>
 }

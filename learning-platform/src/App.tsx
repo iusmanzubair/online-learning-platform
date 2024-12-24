@@ -5,7 +5,7 @@ import { Searchbar } from "./components/Searchbar"
 function App() {
   return (
     <MaxWidthWrapper>
-      <div className="w-full h-[30rem] flex flex-col items-center justify-center">
+      <div className="w-full h-full mt-36 flex flex-col items-center justify-center">
         <Home />
         <Searchbar />
      </div>

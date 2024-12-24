@@ -1,9 +1,10 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { MaxWidthWrapper } from "./MaxWidthWrapper";
 import { useEffect, useState } from "react";
 import { decodeToken } from "./decodeToken";
 import { Enroll } from "./Enroll";
 import { BookOpen } from "lucide-react";
+import toast, { Toaster } from "react-hot-toast";
 
 interface courseType {
   id: number;
@@ -23,7 +24,14 @@ export const Courses = () => {
         const { data } = await axios.get("http://localhost:3000/courses");
         setCourses(data.courses);
       } catch (error) {
-        console.log(error);
+        if(error instanceof AxiosError) {
+            if(error.response) {
+              const { message } = error.response.data; 
+              return toast.error(message ?? "Something went wrong");
+            }
+
+        }
+          return toast.error("Something went wrong");
       }
     };
     getCourses();
@@ -45,7 +53,7 @@ export const Courses = () => {
         }
       </div>
       {courses.length > 0 ? (
-        <div className="h-[500px] my-10">
+        <div className="h-[500px] my-10 grid grid-cols-3 gap-8">
           {courses.map((course) => (
             <div key={course.id} className="border-[1.5px] rounded-lg border-neutral-300 flex flex-col w-[370px] h-[300px] shadow-sm">
                 <div className="bg-[#f4f4f5] w-full h-[150px]"/>
@@ -75,6 +83,7 @@ export const Courses = () => {
           <p className="text-center text-lg">No courses available!</p>
         </div>
       )}
+      <Toaster />
     </MaxWidthWrapper>
   );
 };

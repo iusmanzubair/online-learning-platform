@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { MaxWidthWrapper } from "./MaxWidthWrapper";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate, useParams } from "react-router";
 import { tokenType } from "./decodeToken";
+import toast, { Toaster } from "react-hot-toast";
 
 interface AssignmentType {
   id: string;
@@ -28,7 +29,14 @@ export const Assignments = () => {
         const { data } = await axios.get(`http://localhost:3000/assignments/${courseId}`);
         setAssignments(data.assignments);
       } catch (error) {
-        console.log(error);
+        if(error instanceof AxiosError) {
+            if(error.response) {
+              const { message } = error.response.data; 
+              return toast.error(message ?? "Something went wrong");
+            }
+
+        }
+          return toast.error("Something went wrong");
       }
     };
 
@@ -40,7 +48,14 @@ export const Assignments = () => {
       await axios.delete(`http://localhost:3000/assignments/${assignId}`)
       navigate(0);
     } catch (error) {
-      console.log(error);
+      if(error instanceof AxiosError) {
+            if(error.response) {
+              const { message } = error.response.data; 
+              return toast.error(message ?? "Something went wrong");
+            }
+
+        }
+          return toast.error("Something went wrong");
     }
   }
 
@@ -65,6 +80,7 @@ export const Assignments = () => {
           ))}
         </div>
       )}
+      <Toaster />
     </MaxWidthWrapper>
   );
 };

@@ -1,8 +1,9 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { tokenType } from "./decodeToken";
+import toast, { Toaster } from "react-hot-toast";
 
 export const AssignTask = () => {
     const token = localStorage.getItem('token');
@@ -23,10 +24,17 @@ export const AssignTask = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:3000/assign-task", {title, description, dueDate, courseId});
+      await axios.post("http://localhost:3000/assign-task", { title, description, dueDate, courseId });
       navigate(`/assignments/${courseId}`);
     } catch (error) {
-      console.log(error);
+      if(error instanceof AxiosError) {
+            if(error.response) {
+                const { message } = error.response.data; 
+                return toast.error(message ?? "Something went wrong");
+            }
+
+        }
+        return toast.error("Something went wrong");
     }
   };
 
@@ -85,6 +93,7 @@ export const AssignTask = () => {
           </button>
         </form>
       </div>
+      <Toaster />
     </div>
   );
 };
